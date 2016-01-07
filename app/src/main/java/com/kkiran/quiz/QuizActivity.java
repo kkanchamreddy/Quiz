@@ -1,9 +1,10 @@
 package com.kkiran.quiz;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,8 +12,8 @@ public class QuizActivity extends AppCompatActivity {
 
     private Button mTrueButton;
     private Button mFalseButton;
-    private Button mNextButton;
-    private Button mPreviousButton;
+    private ImageButton mNextButton;
+    private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
 
     private Question[] mQuestions = new Question[]{
@@ -36,8 +37,8 @@ public class QuizActivity extends AppCompatActivity {
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button)findViewById(R.id.false_button);
-        mNextButton = (Button) findViewById(R.id.next_button);
-        mPreviousButton = (Button) findViewById(R.id.previous_button);
+        mNextButton = (ImageButton) findViewById(R.id.next_button);
+        mPreviousButton = (ImageButton) findViewById(R.id.previous_button);
 
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -60,12 +61,19 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex++;
-                if(mCurrentIndex == mQuestions.length - 1){
-                    mNextButton.setEnabled(false);
+
+                if(mCurrentIndex > 0 && !mPreviousButton.isClickable()) {
+                    mPreviousButton.setClickable(true);
+                    //mPreviousButton.setEnabled(true);
                 }
-                if(mCurrentIndex > 0) {
-                    mPreviousButton.setEnabled(true);
+
+                if(mCurrentIndex > mQuestions.length - 1){
+                    mNextButton.setClickable(false);
+                    mCurrentIndex--;
+                    return;
+                    //mNextButton.setEnabled(false);
                 }
+
                 updateQuestion();
 
 
@@ -76,12 +84,17 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex--;
-                if(mCurrentIndex == 0){
-                    mPreviousButton.setEnabled(false);
+
+                if(mCurrentIndex < mQuestions.length - 1 && !mNextButton.isClickable()){
+                    mNextButton.setClickable(true);
+                    //mNextButton.setEnabled(true);
                 }
 
-                if(mCurrentIndex < mQuestions.length - 1){
-                    mNextButton.setEnabled(true);
+                if(mCurrentIndex < 0){
+                    mPreviousButton.setClickable(false);
+                    mCurrentIndex = 0;
+                    return;
+                    //mPreviousButton.setEnabled(false);
                 }
                 updateQuestion();
             }
