@@ -1,20 +1,30 @@
-package com.kkiran.quiz;
+package com.kkiran.quiz.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kkiran.quiz.Question;
+import com.kkiran.quiz.R;
+
 public class QuizActivity extends AppCompatActivity {
 
     private Button mTrueButton;
     private Button mFalseButton;
+    private Button mCheatButton;
     private ImageButton mNextButton;
     private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
+
+    private static final String TAG = "QuizActivity";
+    private static final String KEY_INDEX = "index";
+
 
     private Question[] mQuestions = new Question[]{
             new Question(R.string.question_oceans, true),
@@ -27,19 +37,24 @@ public class QuizActivity extends AppCompatActivity {
     private int mCurrentIndex = 0;
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
-        updateQuestion();
-
-
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button)findViewById(R.id.false_button);
+        mCheatButton = (Button)findViewById(R.id.cheat_button);
         mNextButton = (ImageButton) findViewById(R.id.next_button);
         mPreviousButton = (ImageButton) findViewById(R.id.previous_button);
-
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +114,20 @@ public class QuizActivity extends AppCompatActivity {
                 updateQuestion();
             }
         });
+
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean answerIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
+                Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivity(i);
+            }
+        });
+
+        if(savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX,0);
+        }
+        updateQuestion();
     }
 
     private void updateQuestion() {
