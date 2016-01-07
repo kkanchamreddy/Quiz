@@ -13,6 +13,8 @@ import com.kkiran.quiz.R;
 public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.kkiran.quiz.activity.answer_is_true";
+    private static final String EXTRA_ANSWER_SHOWN = "com.kkiran.quiz.activity.answer_shown";
+
     private boolean mAnswerIsTrue;
     private TextView mAnswerTextView;
     private Button mShowAnswer;
@@ -35,14 +37,23 @@ public class CheatActivity extends AppCompatActivity {
         mShowAnswer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mAnswerIsTrue) {
+                if (mAnswerIsTrue) {
                     mAnswerTextView.setText(R.string.true_button);
                 } else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
+                setAnswerShownResult(true);
             }
         });
+    }
 
+    public static boolean wasAnswerShown(Intent result) {
+        return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
+    }
 
+    private void setAnswerShownResult(boolean isAnswerShown) {
+        Intent data = new Intent();
+        data.putExtra(EXTRA_ANSWER_SHOWN,isAnswerShown );
+        setResult(RESULT_OK, data);
     }
 }

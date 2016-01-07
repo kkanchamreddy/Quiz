@@ -1,5 +1,6 @@
 package com.kkiran.quiz.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,8 +23,11 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton mPreviousButton;
     private TextView mQuestionTextView;
 
+    private boolean mIsCheater;
+
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
 
     private Question[] mQuestions = new Question[]{
@@ -76,7 +80,7 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex++;
-
+                mIsCheater = false;
                 if(mCurrentIndex > 0 && !mPreviousButton.isClickable()) {
                     mPreviousButton.setClickable(true);
                     //mPreviousButton.setEnabled(true);
@@ -99,7 +103,7 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex--;
-
+                mIsCheater = false;
                 if(mCurrentIndex < mQuestions.length - 1 && !mNextButton.isClickable()){
                     mNextButton.setClickable(true);
                     //mNextButton.setEnabled(true);
@@ -120,7 +124,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 boolean answerIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
                 Intent i = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
-                startActivity(i);
+                startActivityForResult(i, REQUEST_CODE_CHEAT);
             }
         });
 
@@ -139,13 +143,29 @@ public class QuizActivity extends AppCompatActivity {
         boolean answerIsTrue = mQuestions[mCurrentIndex].isAnswerTrue();
 
         int messageResId = 0;
+        if(mIsCheater) {
+            messageResId = R.string.judgment_toast;
+        } else{
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
+        }
+        Toast.makeText(QuizActivity.this, messageResId, Toast.LENGTH_LONG).show();
+    }
 
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
-        } else {
-            messageResId = R.string.incorrect_toast;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
         }
 
-        Toast.makeText(QuizActivity.this, messageResId, Toast.LENGTH_LONG).show();
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            if (data == null) {
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
     }
 }
