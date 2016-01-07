@@ -12,6 +12,7 @@ public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mNextButton;
+    private Button mPreviousButton;
     private TextView mQuestionTextView;
 
     private Question[] mQuestions = new Question[]{
@@ -36,6 +37,8 @@ public class QuizActivity extends AppCompatActivity {
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button)findViewById(R.id.false_button);
         mNextButton = (Button) findViewById(R.id.next_button);
+        mPreviousButton = (Button) findViewById(R.id.previous_button);
+
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +59,30 @@ public class QuizActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex + 1) % mQuestions.length;
+                mCurrentIndex++;
+                if(mCurrentIndex == mQuestions.length - 1){
+                    mNextButton.setEnabled(false);
+                }
+                if(mCurrentIndex > 0) {
+                    mPreviousButton.setEnabled(true);
+                }
+                updateQuestion();
+
+
+            }
+        });
+
+        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentIndex--;
+                if(mCurrentIndex == 0){
+                    mPreviousButton.setEnabled(false);
+                }
+
+                if(mCurrentIndex < mQuestions.length - 1){
+                    mNextButton.setEnabled(true);
+                }
                 updateQuestion();
             }
         });
